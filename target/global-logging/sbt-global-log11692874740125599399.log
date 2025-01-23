@@ -1,0 +1,15 @@
+[0m[[0m[0mdebug[0m] [0m[0m> Exec(compile, Some(f6752be1-ce16-4ec3-95de-259a71c7aafa), Some(CommandSource(console0)))[0m
+[0m[[0m[0mdebug[0m] [0m[0mEvaluating tasks: Compile / compile[0m
+[0m[[0m[0mdebug[0m] [0m[0mRunning task... Cancel: Signal, check cycles: false, forcegc: true[0m
+[0m[[0m[0minfo[0m] [0m[0mcompiling 2 Scala sources to /home/joe/projects/probprog/target/scala-2.13/classes ...[0m
+[0m[[0m[0minfo[0m] [0m[0mcompiling 1 Scala source to /home/joe/projects/probprog/target/scala-2.13/classes ...[0m
+[0m[[0m[31merror[0m] [0m[0m/home/joe/projects/probprog/src/main/scala/probprog/examples/package.scala:6:55: not found: value Observation[0m
+[0m[[0m[31merror[0m] [0m[0m  def bayesianLinearRegression(implicit observations: Observation.Collection): Expr[Vector[Double]] = {[0m
+[0m[[0m[31merror[0m] [0m[0m                                                      ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/joe/projects/probprog/src/main/scala/probprog/examples/package.scala:14:30: could not find implicit value for parameter exprs: probprog.ExprCollection[0m
+[0m[[0m[31merror[0m] [0m[0m      normal(fx, 1.0).observe(y)[0m
+[0m[[0m[31merror[0m] [0m[0m                             ^[0m
+[0m[[0m[31merror[0m] [0m[0mtwo errors found[0m
+[0m[[0m[31merror[0m] [0m[0m(Compile / [31mcompileIncremental[0m) Compilation failed[0m
+[0m[[0m[31merror[0m] [0m[0mTotal time: 0 s, completed 23 Jan 2025, 15:47:24[0m
+[0m[[0m[0mdebug[0m] [0m[0m> Exec(shell, None, None)[0m

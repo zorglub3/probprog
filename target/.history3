@@ -1,0 +1,11 @@
+1737630978721:compile
+1737635642463:scalacOptions += "-feature"
+1737635655532:set scalacOptions += "-feature"
+1737635659258:compile
+1737642887324:clean
+1737642888758:compile
+1737643449407:set scalacOptions += "-feature"
+1737643452627:compile
+1737643454613:clean
+1737643460790:set scalacOptions += "-deprecation"
+1737643462999:compile
