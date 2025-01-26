@@ -9,3 +9,7 @@
 1737643454613:clean
 1737643460790:set scalacOptions += "-deprecation"
 1737643462999:compile
+1737849721411:set scalacOptions += "-deprecation"
+1737849970568:compile
+1737854221389:clean
+1737854223869:exit

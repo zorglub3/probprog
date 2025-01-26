@@ -5,6 +5,7 @@ trait AddEvidence[T1, T2, T3] {
 }
 
 trait DistEvidence[T1, T2] {
+  def toDist(v: Expr[T1]): Expr[Distribution[T2]]
 }
 
 trait MulEvidence[T1, T2, T3] {

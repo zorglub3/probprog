@@ -31,7 +31,10 @@ package object lang {
     }
   }
 
-  implicit object NormalDist extends DistEvidence[Distribution.Normal, Double]
+  implicit object NormalDist extends DistEvidence[Distribution.Normal, Double] {
+    def toDist(e: Expr[Distribution.Normal]): Expr[Distribution[Double]] = 
+      e.asInstanceOf[Expr[Distribution[Double]]]
+  }
 
   def normal(expected: Expr[Double], variance: Expr[Double]): Expr[Distribution.Normal] = {
     Expr.Primitive(BuiltIn.NormalDist, Vector(expected, variance))

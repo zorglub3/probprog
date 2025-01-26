@@ -10,13 +10,13 @@ sealed trait Expr[T] {
   }
 
   def sample[T2]()(implicit e: DistEvidence[T, T2]): Expr[T2] = {
-    Expr.Sample(this)
+    Expr.Sample(e.toDist(this))
   }
 
   def observe[T2](v: Expr[T2])(implicit e: DistEvidence[T, T2], exprs: ExprCollection): Expr[T2] = {
-    val e = Expr.Observe(this, v)
-    exprs.addObservation(e)
-    e
+    val expr = Expr.Observe(e.toDist(this), v)
+    exprs.addObservation(expr)
+    expr
   }
 }
 
@@ -52,12 +52,12 @@ object Expr {
     args: Vector[Expr[T1]],
   ) extends Expr[T2]
 
-  final case class Sample[T1, T2](
-    e: Expr[T1],
-  ) extends Expr[T2]
+  final case class Sample[T1, T2 <: Distribution[T1]](
+    e: Expr[T2],
+  ) extends Expr[T1]
 
-  final case class Observe[T1, T2](
-    e1: Expr[T1], 
-    e2: Expr[T2],
-  ) extends Expr[T2]
+  final case class Observe[T1, T2 <: Distribution[T1]](
+    e1: Expr[T2], 
+    e2: Expr[T1],
+  ) extends Expr[T1]
 }
