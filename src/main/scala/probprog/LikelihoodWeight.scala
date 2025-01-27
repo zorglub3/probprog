@@ -1,17 +1,17 @@
-package probprog.monad
+package probprog
 
-import cats.data.State
+import cats.data.IndexedStateT
+import cats.{Eval, FlatMap, Functor}
 import scala.util.Random
-import scala.math.log
-import probprog._
 
-class LikelihoodWeight extends Language {
+class LikelihoodWeight extends Language[Eval] {
   type EvalState = LWState
 
   case class LWState(rngSeed: Long, sigma: Double)
 
-  def getState = State.get[LWState]
-  def setState(s: LWState) = State.set(s)
+  def getState: F[EvalState] = IndexedStateT.get
+  def setState(v: EvalState): F[Unit] = IndexedStateT.set(v)
+  def init(): EvalState = LWState(Random.nextLong(), 1.0)
 
   def sample[T](dist: Distribution[T]): F[T] = {
     for {
@@ -33,25 +33,12 @@ class LikelihoodWeight extends Language {
     } yield value
   }
 
-  def if_[T](cond: Boolean, ifTrue: => F[T], ifFalse: => F[T]): F[T] = {
-    if(cond) {
-      ifTrue
-    } else {
-      ifFalse
-    }
-  }
+  def if_[T](cond: Boolean, ifTrue: => F[T], ifFalse: => F[T]): F[T] = 
+    if(cond) { ifTrue } else { ifFalse }
 
-  object LWState {
-    def init(seed: Long): LWState = LWState(seed, 1.0)
-    def init(): LWState = LWState(Random.nextLong(), 1.0)
-  }
-
-  def init(): LWState = LWState(Random.nextLong(), 1.0)
-  def init(seed: Long): LWState = LWState(seed, 1.0)
-
-  def run[T](prog: F[T], n: Long): Result[T] = {
+  def run[T](prg: F[T], n: Long): Result[T] = {
     LWResult(
-      (for(_ <- 0L until n) yield prog.run(init()).value)
+      (for(_ <- 0L until n) yield prg.run(init()).value)
         .groupBy(_._2)
         .map { case (k, v) => (k, v.map { case (x, _) => x.sigma } .sum) })
   }
@@ -62,6 +49,6 @@ case class LWResult[T](m: Map[T, Double]) extends Result[T] {
 
   def prob(v: T): Double = m.getOrElse(v, 0.0) / total
 
-  def histogram(): Seq[(T, Double)] = 
+  def histogram(): Seq[(T, Double)] =
     m.toSeq.map { case (k, v) => (k, v / total) }
 }

@@ -1,11 +1,11 @@
 package probprog
 
-import cats.data.State
+import cats.data.IndexedStateT
+import cats.{FlatMap, Functor}
 
-trait Language {
+abstract class Language[E[_]: Functor : FlatMap] {
   type EvalState
-
-  type F[T] = State[EvalState, T]
+  type F[T] = IndexedStateT[E, EvalState, EvalState, T]
 
   def normal(mean: Double, deviation: Double): Distribution.Normal =
     new Distribution.Normal(mean, deviation)
