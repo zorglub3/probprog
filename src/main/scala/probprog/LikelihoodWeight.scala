@@ -13,7 +13,7 @@ class LikelihoodWeight extends Language[Eval] {
   def setState(v: EvalState): F[Unit] = IndexedStateT.set(v)
   def init(): EvalState = LWState(Random.nextLong(), 1.0)
 
-  def sample[T](dist: Distribution[T]): F[T] = {
+  def sample(dist: Distribution): F[Double] = {
     for {
       state <- getState
       seed = state.rngSeed
@@ -24,7 +24,7 @@ class LikelihoodWeight extends Language[Eval] {
     } yield result
   }
 
-  def observe[T](dist: Distribution[T], value: T): F[T] = {
+  def observe(dist: Distribution, value: Double): F[Double] = {
     for {
       state <- getState
       sigma = state.sigma
@@ -35,6 +35,8 @@ class LikelihoodWeight extends Language[Eval] {
 
   def if_[T](cond: Boolean, ifTrue: => F[T], ifFalse: => F[T]): F[T] = 
     if(cond) { ifTrue } else { ifFalse }
+
+  def sequence_[T](fs: Iterable[F[T]]): F[Unit] = ???
 
   def run[T](prg: F[T], n: Long): Result[T] = {
     LWResult(
