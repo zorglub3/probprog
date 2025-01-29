@@ -42,12 +42,6 @@ class MetropolisHastings extends Language[Option] {
   def if_[T](cond: Boolean, ifTrue: => F[T], ifFalse: => F[T]): F[T] = 
     if(cond) { ifTrue } else { ifFalse }
 
-  def sequence_[T](fs: Iterable[F[T]]): F[Unit] = {
-    import cats.syntax.all._
-    val F = cats.Foldable[F]
-    F.sequenceVoid(fs)
-  }
-
   def init(u: Double, w: Double): MHState = MHState(Random.nextLong(), 1.0, u, w)
 
   def run[T](prg: F[T], n: Long): Result[T] = {

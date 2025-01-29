@@ -1,9 +1,9 @@
 package probprog
 
 import cats.data.IndexedStateT
-import cats.{FlatMap, Functor, Foldable}
+import cats.{FlatMap, Functor, Foldable, Applicative, Traverse}
 
-abstract class Language[E[_]: Functor : FlatMap : Foldable] {
+abstract class Language[E[_]: Functor : FlatMap : Applicative] {
   type EvalState
   type F[T] = IndexedStateT[E, EvalState, EvalState, T]
 
@@ -19,7 +19,13 @@ abstract class Language[E[_]: Functor : FlatMap : Foldable] {
   def sample(dist: Distribution): F[Double]
   def observe(dist: Distribution, value: Double): F[Double]
   def if_[T](cond: Boolean, ifTrue: => F[T], ifFalse: => F[T]): F[T]
-  def sequence_[T](fs: Iterable[F[T]]): F[Unit]
+
+  def pure_[T](v: T): F[T] = IndexedStateT.pure[E, EvalState, T](v)
+  def sequence_[T](fs: Iterable[F[T]]): F[Unit] = {
+    fs.foldLeft(pure_(())) { case (b, a) => {
+      b.flatMap(_ => a).flatMap(_ => pure_(()))
+    } }
+  }
 
   def run[T](prog: F[T], n: Long): Result[T]
 }

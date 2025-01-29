@@ -102,8 +102,6 @@ class BufferedMetropolisHastings extends Language[Option] {
     }
   }
 
-  def sequence_[T](fs: Iterable[F[T]]): F[Unit] = ???
-
   def run[T](prg: F[T], n: Long): Result[T] = {
     val v = prg.run(initState())
 

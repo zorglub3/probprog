@@ -36,8 +36,6 @@ class LikelihoodWeight extends Language[Eval] {
   def if_[T](cond: Boolean, ifTrue: => F[T], ifFalse: => F[T]): F[T] = 
     if(cond) { ifTrue } else { ifFalse }
 
-  def sequence_[T](fs: Iterable[F[T]]): F[Unit] = ???
-
   def run[T](prg: F[T], n: Long): Result[T] = {
     LWResult(
       (for(_ <- 0L until n) yield prg.run(init()).value)
