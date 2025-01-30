@@ -18,7 +18,7 @@ class MetropolisHastings extends Language[Option] {
   def setState(s: EvalState): F[Unit] = IndexedStateT.set(s)
   def guard(v: Boolean): F[Unit] = IndexedStateT.liftF(Option.when(v)( () ))
 
-  def sample(dist: Distribution): F[Double] = {
+  def sample[T](dist: Distribution[T])(implicit domain: Domain[T]): F[T] = {
     for {
       state <- getState
       seed = state.rngSeed
@@ -29,7 +29,7 @@ class MetropolisHastings extends Language[Option] {
     } yield result
   }
 
-  def observe(dist: Distribution, value: Double): F[Double] = {
+  def observe[T](dist: Distribution[T], value: T): F[T] = {
     for {
       state <- getState
       sigma = state.sigma
@@ -48,12 +48,12 @@ class MetropolisHastings extends Language[Option] {
     val v = prg.run(init(0.0, 1.0))
 
     v match {
-      case None => MHResult(Vector.empty)
+      case None => Iterable.empty
       case Some(v) => {
         var r = v._2
         var w = v._1.sigma
 
-        val builder = Vector.newBuilder[T]
+        val builder = Iterable.newBuilder[T]
 
         (1L until n).foreach { s =>
           prg.run(init(Random.nextDouble(), w)).foreach { vv =>
@@ -64,16 +64,8 @@ class MetropolisHastings extends Language[Option] {
           builder += r
         }
 
-        MHResult(builder.result())
+        builder.result().map { v => (v, 1.0) }
       }
     }
   }
-}
-
-case class MHResult[T](v: Vector[T]) extends Result[T] {
-  val l = v.size.toDouble
-  val h = v.groupBy(identity).map { case (k, v) => (k, v.size.toDouble / l) } .toMap
-
-  def prob(v: T): Double = h.getOrElse(v, 0.0)
-  def histogram(): Seq[(T, Double)] = h.toSeq
 }

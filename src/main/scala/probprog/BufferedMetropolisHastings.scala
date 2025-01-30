@@ -9,7 +9,7 @@ class BufferedMetropolisHastings extends Language[Option] {
   case class BMHState(
     prefix: String, 
     counter: Long,
-    samples: Map[String, Double],
+    samples: Map[String, Value],
     rngSeed: Long,
     sigma: Double,
     u: Double, 
@@ -22,7 +22,7 @@ class BufferedMetropolisHastings extends Language[Option] {
   }
 
   def initState(): BMHState = BMHState("_", 0L, Map.empty, Random.nextLong(), 1.0, 0.0, 1.0)
-  def rerunState(samples: Map[String, Double], u: Double, w: Double): BMHState = {
+  def rerunState(samples: Map[String, Value], u: Double, w: Double): BMHState = {
     val keys = samples.keys.toSeq
 
     if(keys.length > 0) {
@@ -55,7 +55,7 @@ class BufferedMetropolisHastings extends Language[Option] {
     modifyState(_.popPrefix())
   }
 
-  def sample(dist: Distribution): F[Double] = {
+  def sample[T](dist: Distribution[T])(implicit domain: Domain[T]): F[T] = {
     for {
       c <- nextAddress()
       state <- getState
@@ -66,17 +66,17 @@ class BufferedMetropolisHastings extends Language[Option] {
             val rng = new Random(seed)
             val r = dist.sample(rng)
             val nextSeed = rng.nextLong()
-            for(_ <- modifyState(_.copy(rngSeed = nextSeed, samples = state.samples + (c -> r)))) yield r
+            for(_ <- modifyState(_.copy(rngSeed = nextSeed, samples = state.samples + (c -> domain.encode(r))))) yield r
           }
           case Some(r) => {
-            IndexedStateT.pure[Option, BMHState, Double](r)
+            IndexedStateT.liftF[Option, EvalState, T](domain.extract(r))
           }
         }
       }
     } yield result
   }
 
-  def observe(dist: Distribution, value: Double): F[Double] = {
+  def observe[T](dist: Distribution[T], value: T): F[T] = {
     for {
       state <- getState
       sigma = state.sigma
@@ -106,13 +106,13 @@ class BufferedMetropolisHastings extends Language[Option] {
     val v = prg.run(initState())
 
     v match {
-      case None => MHResult(Vector.empty)
+      case None => Iterable.empty
       case Some(v) => {
         var r = v._2
         var w = v._1.sigma
-        var samples = Map.empty[String, Double]
+        var samples = Map.empty[String, Value]
 
-        val builder = Vector.newBuilder[T]
+        val builder = Iterable.newBuilder[T]
 
         (1L until n).foreach { s =>
           prg.run(rerunState(samples, Random.nextDouble(), w)).foreach { vv =>
@@ -124,7 +124,7 @@ class BufferedMetropolisHastings extends Language[Option] {
           builder += r
         }
 
-        MHResult(builder.result())
+        builder.result().map { v => (v, 1.0) }
       }
     }
   }
