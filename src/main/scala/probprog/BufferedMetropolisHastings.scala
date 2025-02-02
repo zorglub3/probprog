@@ -1,10 +1,14 @@
 package probprog
 
-import cats.data.IndexedStateT
+import cats.data.StateT
 import scala.util.Random
 
-class BufferedMetropolisHastings extends Language[Option] { 
+class BufferedMetropolisHastings extends Language { 
   type EvalState = BMHState 
+  type F[T] = StateT[Option, EvalState, T]
+
+  def flatMapF[T, U](v: F[T])(f: T => F[U]): F[U] = v.flatMap(f)
+  def mapF[T, U](v: F[T])(f: T => U): F[U] = v.map(f)
 
   case class BMHState(
     prefix: String, 
@@ -34,10 +38,10 @@ class BufferedMetropolisHastings extends Language[Option] {
     }
   }
 
-  def getState: F[BMHState] = IndexedStateT.get
-  def setState(s: BMHState): F[Unit] = IndexedStateT.set(s)
-  def modifyState(f: BMHState => BMHState): F[Unit] = IndexedStateT.modify(f)
-  def guard(v: Boolean): F[Unit] = IndexedStateT.liftF(Option.when(v)( () ))
+  def getState: F[BMHState] = StateT.get
+  def setState(s: BMHState): F[Unit] = StateT.set(s)
+  def modifyState(f: BMHState => BMHState): F[Unit] = StateT.modify(f)
+  def guard(v: Boolean): F[Unit] = StateT.liftF(Option.when(v)( () ))
 
   def nextAddress(): F[String] = {
     for {
@@ -69,7 +73,7 @@ class BufferedMetropolisHastings extends Language[Option] {
             for(_ <- modifyState(_.copy(rngSeed = nextSeed, samples = state.samples + (c -> domain.encode(r))))) yield r
           }
           case Some(r) => {
-            IndexedStateT.liftF[Option, EvalState, T](domain.extract(r))
+            StateT.liftF[Option, EvalState, T](domain.extract(r))
           }
         }
       }
@@ -100,6 +104,14 @@ class BufferedMetropolisHastings extends Language[Option] {
         _ <- popAddressPrefix()
       } yield v
     }
+  }
+
+  def pure_[T](v: T): F[T] = StateT.pure(v)
+
+  def sequence_[T](fs: Iterable[F[T]]): F[Unit] = {
+    fs.foldLeft(pure_(())) { case (b, a) => {
+      b.flatMap(_ => a).flatMap(_ => pure_(()))
+    } }
   }
 
   def run[T](prg: F[T], n: Long): Result[T] = {

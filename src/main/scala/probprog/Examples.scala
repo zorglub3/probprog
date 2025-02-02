@@ -2,9 +2,8 @@ package probprog
 
 import cats.{Functor, FlatMap}
 
-class Examples[E[_]: Functor : FlatMap](val lang: Language[E]) {
+class Examples(val lang: Language) {
   import lang._
-  import implicits._
 
   def biasedCoin: F[Boolean] =
     for {

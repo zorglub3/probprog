@@ -1,11 +1,15 @@
 package probprog
 
-import cats.data.IndexedStateT
+import cats.data.StateT
 import cats.{FlatMap, Functor}
 import scala.util.Random
 
-class MetropolisHastings extends Language[Option] {
+class MetropolisHastings extends Language {
   type EvalState = MHState
+  type F[T] = StateT[Option, EvalState, T]
+
+  def flatMapF[T, U](v: F[T])(f: T => F[U]): F[U] = v.flatMap(f)
+  def mapF[T, U](v: F[T])(f: T => U): F[U] = v.map(f)
 
   case class MHState(
     rngSeed: Long,
@@ -14,9 +18,9 @@ class MetropolisHastings extends Language[Option] {
     w: Double
   )
 
-  def getState: F[EvalState] = IndexedStateT.get
-  def setState(s: EvalState): F[Unit] = IndexedStateT.set(s)
-  def guard(v: Boolean): F[Unit] = IndexedStateT.liftF(Option.when(v)( () ))
+  def getState: F[EvalState] = StateT.get
+  def setState(s: EvalState): F[Unit] = StateT.set(s)
+  def guard(v: Boolean): F[Unit] = StateT.liftF(Option.when(v)( () ))
 
   def sample[T](dist: Distribution[T])(implicit domain: Domain[T]): F[T] = {
     for {
@@ -41,6 +45,14 @@ class MetropolisHastings extends Language[Option] {
 
   def if_[T](cond: Boolean, ifTrue: => F[T], ifFalse: => F[T]): F[T] = 
     if(cond) { ifTrue } else { ifFalse }
+
+  def pure_[T](v: T): F[T] = StateT.pure(v)
+
+  def sequence_[T](fs: Iterable[F[T]]): F[Unit] = {
+    fs.foldLeft(pure_(())) { case (b, a) => {
+      b.flatMap(_ => a).flatMap(_ => pure_(()))
+    } }
+  }
 
   def init(u: Double, w: Double): MHState = MHState(Random.nextLong(), 1.0, u, w)
 
