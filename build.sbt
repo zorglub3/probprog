@@ -29,6 +29,7 @@ libraryDependencies += "org.scala-lang.modules" %% "scala-parser-combinators" % 
 libraryDependencies += "org.typelevel" %% "cats-core" % "2.13.0"
 libraryDependencies += "org.scala-graph" %% "graph-core" % "2.0.0"
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.1.2" % Test
+libraryDependencies += "org.scala-lang.modules" %% "scala-parallel-collections" % "1.2.0"
 
 // Here, `libraryDependencies` is a set of dependencies, and by using `+=`,
 // we're adding the scala-parser-combinators dependency to the set of dependencies

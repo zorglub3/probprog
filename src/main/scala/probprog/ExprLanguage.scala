@@ -7,7 +7,6 @@ abstract class ExprLanguage {
   type F[T]
   type Result[T] = Iterable[(T, Double)]
 
-
   def normal(mean: Expr[Double], deviation: Expr[Double]): Expr[Distribution.Normal] = ???
 
   def sample[T](dist: Expr[Distribution[T]])(implicit domain: Domain[T]): F[Expr[T]]
