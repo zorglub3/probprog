@@ -26,6 +26,16 @@ class FiftyFifty extends AnyFlatSpec with Matchers {
     assert(average.weighted(result) === 0.5 +- 0.01)
   }
 
+  "A parallel likelihood-weight evaluator" should "evaluate to 50-50" in {
+    val prg = new FiftyFifty(new ParallelLikelihoodWeight(6))
+
+    val result = prg.lang.run(prg.prog, 10000)
+
+    val average = new util.Average[Double]
+
+    assert(average.weighted(result) === 0.5 +- 0.01)
+  }
+
   "A Metropolis Hastings evaluator" should "evaluate to 50-50" in {
     val prg = new FiftyFifty(new MetropolisHastings)
 
