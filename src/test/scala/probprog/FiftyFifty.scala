@@ -37,7 +37,7 @@ class FiftyFifty extends AnyFlatSpec with Matchers {
   }
 
   "A Metropolis Hastings evaluator" should "evaluate to 50-50" in {
-    val prg = new FiftyFifty(new MetropolisHastings)
+    val prg = new FiftyFifty(new IndependentMetropolisHastings)
 
     val result = prg.lang.run(prg.prog, 10000)
 

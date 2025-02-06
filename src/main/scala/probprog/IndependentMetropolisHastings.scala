@@ -4,7 +4,7 @@ import cats.data.StateT
 import cats.{FlatMap, Functor}
 import scala.util.Random
 
-class MetropolisHastings extends Language {
+class IndenpendentMetropolisHastings extends Language {
   type EvalState = MHState
   type F[T] = StateT[Option, EvalState, T]
 
