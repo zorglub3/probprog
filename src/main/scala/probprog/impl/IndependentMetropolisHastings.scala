@@ -1,12 +1,23 @@
-package probprog
+package probprog.impl
 
 import cats.data.StateT
 import cats.{FlatMap, Functor}
 import scala.util.Random
+import probprog.{Language, Distribution, Domain}
 
-class IndenpendentMetropolisHastings extends Language {
+class IndependentMetropolisHastings extends Language {
   type EvalState = MHState
   type F[T] = StateT[Option, EvalState, T]
+  type Dist[T] = Distribution[T]
+
+  def normal(mean: Double, deviation: Double) = 
+    new Distribution.Normal(mean, deviation)
+  def bernoulli(p: Double) = 
+    new Distribution.Bernoulli(p)
+  def uniformRange(range: Range) = 
+    new Distribution.UniformRange(range)
+  def uniformContinuous(min: Double, max: Double) = 
+    new Distribution.UniformContinuous(min, max)
 
   def flatMapF[T, U](v: F[T])(f: T => F[U]): F[U] = v.flatMap(f)
   def mapF[T, U](v: F[T])(f: T => U): F[U] = v.map(f)

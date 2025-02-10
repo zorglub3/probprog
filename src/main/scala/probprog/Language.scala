@@ -3,8 +3,9 @@ package probprog
 import cats.data.IndexedStateT
 import cats.{FlatMap, Functor, Foldable, Applicative, Traverse}
 
-abstract class Language {
+trait Language {
   type F[T]
+  type Dist[T]
 
   def flatMapF[T, U](v: F[T])(f: T => F[U]): F[U]
   def mapF[T, U](v: F[T])(f: T => U): F[U]
@@ -16,17 +17,13 @@ abstract class Language {
     def map[U](f: T => U): F[U] = mapF(v)(f)
   }
 
-  def normal(mean: Double, deviation: Double): Distribution.Normal =
-    new Distribution.Normal(mean, deviation)
-  def bernoulli(p: Double): Distribution.Bernoulli =
-    new Distribution.Bernoulli(p)
-  def uniformRange(range: Range): Distribution.UniformRange =
-    new Distribution.UniformRange(range)
-  def uniformContinuous(min: Double, max: Double): Distribution.UniformContinuous =
-    new Distribution.UniformContinuous(min, max)
+  def normal(mean: Double, deviation: Double): Dist[Double]
+  def bernoulli(p: Double): Dist[Double]
+  def uniformRange(range: Range): Dist[Int]
+  def uniformContinuous(min: Double, max: Double): Dist[Double]
 
-  def sample[T](dist: Distribution[T])(implicit domain: Domain[T]): F[T]
-  def observe[T](dist: Distribution[T], value: T): F[T]
+  def sample[T](dist: Dist[T])(implicit domain: Domain[T]): F[T]
+  def observe[T](dist: Dist[T], value: T): F[T]
   def if_[T](cond: Boolean, ifTrue: => F[T], ifFalse: => F[T]): F[T]
 
   def pure_[T](v: T): F[T]

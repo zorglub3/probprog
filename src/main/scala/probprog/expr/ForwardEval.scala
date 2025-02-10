@@ -1,19 +1,19 @@
-package probprog
+package probprog.expr
 
 import scala.math
 import java.lang.RuntimeException
 
-class ForwardEval extends ExprEval {
-  type Env[T] = Map[Expr.Id, T]
+class ForwardEval extends DiffExprEval {
+  type Env[T] = Map[DiffExpr.Id, T]
 
   def emptyEnv[T](): Env[T] = Map.empty
 
-  def assign[T](env: Env[T], variable: Expr.Variable[T], value: T): Env[T] = {
+  def assign[T](env: Env[T], variable: DiffExpr.Variable[T], value: T): Env[T] = {
     env + (variable.id -> value)
   }
 
-  def eval[T](env: Env[T], expr: Expr[T])(implicit frac: Fractional[T]): (Env[T], T) = {
-    import Expr._
+  def eval[T](env: Env[T], expr: DiffExpr[T])(implicit frac: Fractional[T]): (Env[T], T) = {
+    import DiffExpr._
     import Operator._
 
     val result = expr match {
@@ -30,7 +30,7 @@ class ForwardEval extends ExprEval {
     (env, result)
   }
 
-  def diff[T](env: Env[T], expr: Expr[T], amount: T)(implicit frac: Fractional[T]): Env[T] = {
+  def diff[T](env: Env[T], expr: DiffExpr[T], amount: T)(implicit frac: Fractional[T]): Env[T] = {
     throw new RuntimeException("No differentiation evaluation for ForwardEval")
   }
 }

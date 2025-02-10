@@ -1,11 +1,25 @@
-package probprog
+package probprog.impl
 
 import cats.data.StateT
 import scala.util.Random
+import probprog.Language
+import probprog.Distribution
+import probprog.Domain
+import probprog.Value
 
 class BufferedMetropolisHastings extends Language { 
   type EvalState = BMHState 
   type F[T] = StateT[Option, EvalState, T]
+  type Dist[T] = Distribution[T]
+
+  def normal(mean: Double, deviation: Double) =
+    new Distribution.Normal(mean, deviation)
+  def bernoulli(p: Double) =
+    new Distribution.Bernoulli(p)
+  def uniformRange(range: Range) =
+    new Distribution.UniformRange(range)
+  def uniformContinuous(min: Double, max: Double) =
+    new Distribution.UniformContinuous(min, max)
 
   def flatMapF[T, U](v: F[T])(f: T => F[U]): F[U] = v.flatMap(f)
   def mapF[T, U](v: F[T])(f: T => U): F[U] = v.map(f)
@@ -59,7 +73,7 @@ class BufferedMetropolisHastings extends Language {
     modifyState(_.popPrefix())
   }
 
-  def sample[T](dist: Distribution[T])(implicit domain: Domain[T]): F[T] = {
+  def sample[T](dist: Dist[T])(implicit domain: Domain[T]): F[T] = {
     for {
       c <- nextAddress()
       state <- getState
@@ -80,7 +94,7 @@ class BufferedMetropolisHastings extends Language {
     } yield result
   }
 
-  def observe[T](dist: Distribution[T], value: T): F[T] = {
+  def observe[T](dist: Dist[T], value: T): F[T] = {
     for {
       state <- getState
       sigma = state.sigma

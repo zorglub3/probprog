@@ -1,24 +1,24 @@
-package probprog
+package probprog.expr
 
 import scala.language.implicitConversions
 
-sealed trait Expr[T] {
-  val id: Expr.Id = Expr.incCounter()
+sealed trait DiffExpr[T] {
+  val id: DiffExpr.Id = DiffExpr.incCounter()
 
-  def +(v: Expr[T]): Expr[T] = new Expr.BinOp(Operator.Add, this, v)
-  def -(v: Expr[T]): Expr[T] = new Expr.BinOp(Operator.Subtract, this, v)
-  def *(v: Expr[T]): Expr[T] = new Expr.BinOp(Operator.Multiply, this, v)
-  def /(v: Expr[T]): Expr[T] = new Expr.BinOp(Operator.Divide, this, v)
+  def +(v: DiffExpr[T]): DiffExpr[T] = new DiffExpr.BinOp(Operator.Add, this, v)
+  def -(v: DiffExpr[T]): DiffExpr[T] = new DiffExpr.BinOp(Operator.Subtract, this, v)
+  def *(v: DiffExpr[T]): DiffExpr[T] = new DiffExpr.BinOp(Operator.Multiply, this, v)
+  def /(v: DiffExpr[T]): DiffExpr[T] = new DiffExpr.BinOp(Operator.Divide, this, v)
 }
 
-object Expr {
-  final class BinOp[T](val operator: Operator, val left: Expr[T], val right: Expr[T]) extends Expr[T]
-  final class Constant[T](val value: T) extends Expr[T]
-  final class Variable[T](val name: String) extends Expr[T]
-  final class FunCall[T](val function: Function1[T], val args: Vector[Expr[T]]) extends Expr[T]
+object DiffExpr {
+  final class BinOp[T](val operator: Operator, val left: DiffExpr[T], val right: DiffExpr[T]) extends DiffExpr[T]
+  final class Constant[T](val value: T) extends DiffExpr[T]
+  final class Variable[T](val name: String) extends DiffExpr[T]
+  final class FunCall[T](val function: Function1[T], val args: Vector[DiffExpr[T]]) extends DiffExpr[T]
 
   object BinOp {
-    def unapply[T](expr: Expr[T]): Option[(Operator, Expr[T], Expr[T])] = {
+    def unapply[T](expr: DiffExpr[T]): Option[(Operator, DiffExpr[T], DiffExpr[T])] = {
       expr match {
         case e: BinOp[T] => Some((e.operator, e.left, e.right))
         case _ => None
@@ -27,7 +27,7 @@ object Expr {
   }
 
   object Constant {
-    def unapply[T](expr: Expr[T]): Option[T] = {
+    def unapply[T](expr: DiffExpr[T]): Option[T] = {
       expr match {
         case e: Constant[T] => Some(e.value)
         case _ => None
@@ -36,7 +36,7 @@ object Expr {
   }
 
   object FunCall {
-    def unapply[T](expr: Expr[T]): Option[(Function1[T], Vector[Expr[T]])] = {
+    def unapply[T](expr: DiffExpr[T]): Option[(Function1[T], Vector[DiffExpr[T]])] = {
       expr match {
         case e: FunCall[T] => Some((e.function, e.args))
         case _ => None
@@ -44,7 +44,7 @@ object Expr {
     }
   }
 
-  implicit def constant[T](c: T): Expr[T] = new Constant[T](c)
+  implicit def constant[T](c: T): DiffExpr[T] = new Constant[T](c)
 
   type Id = Int
 

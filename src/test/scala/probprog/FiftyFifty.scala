@@ -3,6 +3,7 @@ package probprog
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import cats.{Functor, FlatMap}
+import probprog.impl._
 
 class FiftyFifty extends AnyFlatSpec with Matchers {
   class FiftyFifty(val lang: Language) {

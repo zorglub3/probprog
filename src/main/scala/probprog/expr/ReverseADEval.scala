@@ -1,31 +1,31 @@
-package probprog
+package probprog.expr
 
 import scala.math
 
-class ReverseADEval extends ExprEval {
+class ReverseADEval extends DiffExprEval {
   import ReverseADEval._
   type Env[T] = Map[EnvEntry, T]
 
   def emptyEnv[T](): Env[T] = Map.empty
 
-  def assign[T](env: Env[T], variable: Expr.Variable[T], value: T): Env[T] = {
+  def assign[T](env: Env[T], variable: DiffExpr.Variable[T], value: T): Env[T] = {
     env + (EvalEntry(variable.id) -> value)
   }
 
-  def get[T](env: Env[T], id: Expr.Id, default: T): T = 
+  def get[T](env: Env[T], id: DiffExpr.Id, default: T): T = 
     env.getOrElse(EvalEntry(id), default)
 
-  def assignId[T](env: Env[T], id: Expr.Id, value: T): Env[T] = {
+  def assignId[T](env: Env[T], id: DiffExpr.Id, value: T): Env[T] = {
     env + (EvalEntry(id) -> value)
   }
 
-  def addId[T](env: Env[T], id: Expr.Id, value: T)(implicit frac: Fractional[T]): Env[T] = {
+  def addId[T](env: Env[T], id: DiffExpr.Id, value: T)(implicit frac: Fractional[T]): Env[T] = {
     import frac._
     env + (DiffEntry(id) -> (env.getOrElse(DiffEntry(id), frac.zero) + value))
   }
 
-  def eval[T](env: Env[T], expr: Expr[T])(implicit frac: Fractional[T]): (Env[T], T) = {
-    import Expr._
+  def eval[T](env: Env[T], expr: DiffExpr[T])(implicit frac: Fractional[T]): (Env[T], T) = {
+    import DiffExpr._
     import Operator._
     import frac._
 
@@ -53,8 +53,8 @@ class ReverseADEval extends ExprEval {
     (assignId(newEnv, expr.id, result), result)
   }
 
-  def diff[T](env: Env[T], expr: Expr[T], amount: T)(implicit frac: Fractional[T]): Env[T] = {
-    import Expr._
+  def diff[T](env: Env[T], expr: DiffExpr[T], amount: T)(implicit frac: Fractional[T]): Env[T] = {
+    import DiffExpr._
     import Operator._
     import frac._
 
@@ -92,6 +92,6 @@ class ReverseADEval extends ExprEval {
 object ReverseADEval {
   sealed trait EnvEntry
 
-  final case class EvalEntry(id: Expr.Id) extends EnvEntry
-  final case class DiffEntry(id: Expr.Id) extends EnvEntry
+  final case class EvalEntry(id: DiffExpr.Id) extends EnvEntry
+  final case class DiffEntry(id: DiffExpr.Id) extends EnvEntry
 }

@@ -3,15 +3,17 @@ package probprog
 import cats.data.IndexedStateT
 import cats.{FlatMap, Functor, Foldable, Applicative, Traverse}
 
-abstract class ExprLanguage {
+trait ExprLanguage {
   type F[T]
+  type E[T]
+  type Dist[T]
   type Result[T] = Iterable[(T, Double)]
 
-  def normal(mean: Expr[Double], deviation: Expr[Double]): Expr[Distribution.Normal] = ???
+  def normal(mean: E[Double], deviation: E[Double]): E[Distribution.Normal]
 
-  def sample[T](dist: Expr[Distribution[T]])(implicit domain: Domain[T]): F[Expr[T]]
-  def observe[T](dist: Expr[Distribution[T]], value: Expr[T]): F[Expr[T]]
-  def if_[T](cond: Expr[Boolean], ifTrue: => F[Expr[T]], ifFalse: => F[Expr[T]]): F[Expr[T]]
+  def sample[T](dist: E[Distribution[T]])(implicit domain: Domain[T]): F[E[T]]
+  def observe[T](dist: E[Dist[T]], value: E[T]): F[E[T]]
+  def if_[T](cond: E[Boolean], ifTrue: => F[E[T]], ifFalse: => F[E[T]]): F[E[T]]
 
-  def run[T](prog: F[Expr[T]], n: Long): Result[T]
+  def run[T](prog: F[E[T]], n: Long): Result[T]
 }
