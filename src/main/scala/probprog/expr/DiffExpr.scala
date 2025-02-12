@@ -35,6 +35,15 @@ object DiffExpr {
     }
   }
 
+  object Variable {
+    def unapply[T](expr: DiffExpr[T]): Option[String] = {
+      expr match {
+        case e: Variable[T] => Some(e.name)
+        case _ => None
+      }
+    }
+  }
+
   object FunCall {
     def unapply[T](expr: DiffExpr[T]): Option[(Function1[T], Vector[DiffExpr[T]])] = {
       expr match {
@@ -45,6 +54,8 @@ object DiffExpr {
   }
 
   implicit def constant[T](c: T): DiffExpr[T] = new Constant[T](c)
+
+  def variable[T](name: String): Variable[T] = new Variable[T](name)
 
   type Id = Int
 

@@ -1,7 +1,7 @@
 # Probabilistic Programming in Scala
 
 This is my exploration of probabilistic programming in Scala. This implemented as
-a an embedded domain specific language in Scala. Several inference algorithms have
+an embedded domain specific language in Scala. Several inference algorithms have
 been implemented for this DSL and more will come. The implementation has several
 goals:
 
@@ -12,10 +12,18 @@ goals:
 
 ## Work in Progress
 
-- An importance sampling inference module.
 - Deep learning using stochastic gradient descent. Using the reverse mode 
   automatic differentiation to find gradients.
-- More examples...
+- More examples including probabilistic networks and probabilistic neural networks.
+- More tests and some test rework. Due to the probabilistic nature of execution, 
+  tests will pass with certain probability instead of just pass/fail deterministically
+  (this is a problem).
+
+## Todo
+
+- Some continuation-passing-style (Cats `ContT` based types) and an importance 
+  sampling inference module.
+- Use scalafix to clean up everything.
 
 ## License, Warranty, and Copyright
 
