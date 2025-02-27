@@ -27,7 +27,8 @@ trait Language {
   def if_[T](cond: Boolean, ifTrue: => F[T], ifFalse: => F[T]): F[T]
 
   def pure_[T](v: T): F[T]
-  def sequence_[T](fs: Iterable[F[T]]): F[Unit]
+
+  def sequence_[T, S[_]](fs: S[F[T]])(implicit t: Traverse[S]): F[S[T]]
 
   def run[T](prog: F[T], n: Long): Result[T]
 }

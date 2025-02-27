@@ -1,7 +1,7 @@
 package probprog.impl
 
 import cats.data.StateT
-import cats.{FlatMap, Functor}
+import cats.{FlatMap, Functor, Traverse}
 import scala.util.Random
 import probprog.{Language, Distribution, Domain}
 
@@ -59,11 +59,8 @@ class IndependentMetropolisHastings extends Language {
 
   def pure_[T](v: T): F[T] = StateT.pure(v)
 
-  def sequence_[T](fs: Iterable[F[T]]): F[Unit] = {
-    fs.foldLeft(pure_(())) { case (b, a) => {
-      b.flatMap(_ => a).flatMap(_ => pure_(()))
-    } }
-  }
+  def sequence_[T, S[_]](fs: S[F[T]])(implicit t: Traverse[S]): F[S[T]] =
+    t.sequence(fs)
 
   def init(u: Double, w: Double): MHState = MHState(Random.nextLong(), 1.0, u, w)
 

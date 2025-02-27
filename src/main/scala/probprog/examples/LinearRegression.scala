@@ -5,7 +5,7 @@ import probprog.Language
 class LinearRegression(val lang: Language) {
   import lang._
 
-  def linearRegression(points: Iterable[(Double, Double)]): F[(Double, Double)] = {
+  def linearRegression(points: Seq[(Double, Double)]): F[(Double, Double)] = {
     def observeData(slope: Double, intercept: Double, x: Double, y: Double): F[Double] = {
       val fx = slope * x + intercept
       observe(normal(fx, 1.0), y)

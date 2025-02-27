@@ -74,6 +74,7 @@ class ReverseADEval extends DiffExprEval {
             _ <- assignId(e.id, v)
           } yield v
         }
+        case _ => throw new java.lang.RuntimeException(s"Unsupported expression: $e")
       }
     }
 

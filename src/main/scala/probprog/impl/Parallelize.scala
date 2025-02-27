@@ -1,5 +1,6 @@
 package probprog.impl
 
+import cats.Traverse
 import probprog.{Language, Domain, Distribution}
 import scala.collection.parallel.CollectionConverters._
 
@@ -26,8 +27,7 @@ class Parallelize[L <: Language](threads: Int, val language: L) extends Language
 
   def pure_[T](v: T): F[T] = language.pure_(v)
 
-  def sequence_[T](fs: Iterable[F[T]]): F[Unit] = 
-    language.sequence_(fs)
+  def sequence_[T, S[_]](fs: S[F[T]])(implicit t: Traverse[S]): F[S[T]] = language.sequence_(fs)
 
   def run[T](prg: F[T], n: Long): Result[T] = {
     val perThread: Long = n / threads

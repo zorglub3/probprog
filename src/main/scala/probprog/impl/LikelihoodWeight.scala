@@ -1,7 +1,9 @@
 package probprog.impl
 
 import cats.data.StateT
-import cats.{Eval, FlatMap, Functor}
+import cats.{Eval, FlatMap, Functor, Traverse}
+import cats.Traverse
+import cats.syntax.all._
 import scala.util.Random
 import probprog.{Language, Distribution, Domain}
 
@@ -53,11 +55,8 @@ class LikelihoodWeight extends Language {
 
   def pure_[T](v: T): F[T] = StateT.pure(v)
 
-  def sequence_[T](fs: Iterable[F[T]]): F[Unit] = {
-    fs.foldLeft(pure_(())) { case (b, a) => {
-      b.flatMap(_ => a).flatMap(_ => pure_(()))
-    } }
-  }
+  def sequence_[T, S[_]](fs: S[F[T]])(implicit t: Traverse[S]): F[S[T]] =
+    t.sequence(fs)
 
   def run[T](prg: F[T], n: Long): Result[T] = {
     (for(_ <- 0L until n) yield prg.run(init()).value)
