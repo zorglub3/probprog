@@ -1,6 +1,6 @@
 package probprog.expr
 
-import probprog.Distribution.WeightedSequence
+import probprog.distribution.WeightedSequence
 
 import scala.math.exp
 import scala.math.log
@@ -22,7 +22,7 @@ case class ParticleExpr[T](particles: Vector[Particle[T]]) {
     val maxLogWeight = logWeights.reduce(max(_, _))
     val weights = logWeights.map { lwi => exp(lwi - maxLogWeight) }
     val law = maxLogWeight + log(weights.sum/weights.length)
-    val dist = new WeightedSequence(particles, weights)
+    val dist = new WeightedSequence(particles.zip(weights))
     ParticleExpr(dist.sampleN(n, rnd).toVector.map { p => Particle(p.value, law) })
   }
 

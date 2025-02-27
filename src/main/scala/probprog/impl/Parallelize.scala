@@ -13,7 +13,9 @@ class Parallelize[L <: Language](threads: Int, val language: L) extends Language
   def normal(mean: Double, deviation: Double) = language.normal(mean, deviation)
   def bernoulli(p: Double) = language.bernoulli(p)
   def uniformRange(range: Range) = language.uniformRange(range)
-  def uniformContinuous(min: Double, max: Double) = language.uniformContinuous(min, max)
+  def uniform(min: Double, max: Double) = language.uniform(min, max)
+  def uniformSequence[T](seq: Seq[T]) = language.uniformSequence(seq)
+  def weightedSequence[T](seq: Seq[(T, Double)]) = language.weightedSequence(seq)
 
   def flatMapF[T, U](v: F[T])(f: T => F[U]): F[U] = language.flatMapF(v)(f)
   def mapF[T, U](v: F[T])(f: T => U): F[U] = language.mapF(v)(f)

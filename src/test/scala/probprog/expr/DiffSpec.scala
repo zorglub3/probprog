@@ -2,7 +2,6 @@ package probprog.expr
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-import probprog._
 
 class DiffSpec extends AnyFlatSpec with Matchers {
   import DiffExpr._

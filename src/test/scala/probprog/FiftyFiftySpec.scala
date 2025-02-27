@@ -11,7 +11,6 @@ class FiftyFiftySpec extends AnyFlatSpec with Matchers {
 
     val result = prg.lang.run(prg.prog, 10000)
 
-    println(s"result: $result")
     val average = new util.Average[Double]
 
     assert(average.weighted(result) === 0.5 +- 0.1)

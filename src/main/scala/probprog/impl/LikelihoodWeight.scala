@@ -3,25 +3,14 @@ package probprog.impl
 import cats.Eval
 import cats.Traverse
 import cats.data.StateT
-import probprog.Distribution
 import probprog.Domain
 import probprog.Language
 
 import scala.util.Random
 
-class LikelihoodWeight extends Language { 
+class LikelihoodWeight extends Language with StdDistributions { 
   type EvalState = LWState
   type F[T] = StateT[Eval, EvalState, T]
-  type Dist[T] = Distribution[T]
-
-  def normal(mean: Double, deviation: Double) =
-    new Distribution.Normal(mean, deviation)
-  def bernoulli(p: Double) =
-    new Distribution.Bernoulli(p)
-  def uniformRange(range: Range) =
-    new Distribution.UniformRange(range)
-  def uniformContinuous(min: Double, max: Double) =
-    new Distribution.UniformContinuous(min, max)
 
   def flatMapF[T, U](v: F[T])(f: T => F[U]): F[U] = v.flatMap(f)
   def mapF[T, U](v: F[T])(f: T => U): F[U] = v.map(f)

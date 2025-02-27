@@ -1,7 +1,6 @@
 package probprog.examples
 
 import probprog._
-import probprog.util.DenseMatrix
 
 class BayesianNN(val lang: Language) {
   import lang._

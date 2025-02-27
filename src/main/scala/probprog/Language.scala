@@ -19,7 +19,9 @@ trait Language {
   def normal(mean: Double, deviation: Double): Dist[Double]
   def bernoulli(p: Double): Dist[Double]
   def uniformRange(range: Range): Dist[Int]
-  def uniformContinuous(min: Double, max: Double): Dist[Double]
+  def uniform(min: Double, max: Double): Dist[Double]
+  def uniformSequence[T](seq: Seq[T]): Dist[T]
+  def weightedSequence[T](seq: Seq[(T, Double)]): Dist[T]
 
   def sample[T](dist: Dist[T])(implicit domain: Domain[T]): F[T]
   def observe[T](dist: Dist[T], value: T): F[T]
