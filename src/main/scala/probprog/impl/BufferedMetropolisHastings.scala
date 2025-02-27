@@ -1,12 +1,13 @@
 package probprog.impl
 
-import cats.data.StateT
 import cats.Traverse
-import scala.util.Random
-import probprog.Language
+import cats.data.StateT
 import probprog.Distribution
 import probprog.Domain
+import probprog.Language
 import probprog.Value
+
+import scala.util.Random
 
 class BufferedMetropolisHastings extends Language { 
   type EvalState = BMHState 

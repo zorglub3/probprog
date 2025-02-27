@@ -1,8 +1,11 @@
 package probprog.expr
 
-import scala.util.Random
-import scala.math.{log, exp, max}
 import probprog.Distribution.WeightedSequence
+
+import scala.math.exp
+import scala.math.log
+import scala.math.max
+import scala.util.Random
 
 case class ParticleExpr[T](particles: Vector[Particle[T]]) {
   def map[S](f: T => S): ParticleExpr[S] = ParticleExpr(particles.map(_.map(f)))

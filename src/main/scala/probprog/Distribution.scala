@@ -1,7 +1,9 @@
 package probprog
 
+import scala.math.Pi
+import scala.math.exp
+import scala.math.sqrt
 import scala.util.Random
-import scala.math.{exp, sqrt, Pi}
 
 sealed trait Distribution[T] {
   def sample(rnd: Random): T 

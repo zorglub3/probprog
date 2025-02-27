@@ -1,7 +1,6 @@
 package probprog.expr
 
 import cats.data.State
-import scala.math
 
 class ReverseADEval extends DiffExprEval {
   import ReverseADEval._

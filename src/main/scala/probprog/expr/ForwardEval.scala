@@ -1,6 +1,5 @@
 package probprog.expr
 
-import scala.math
 import java.lang.RuntimeException
 
 class ForwardEval extends DiffExprEval {

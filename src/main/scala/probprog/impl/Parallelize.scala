@@ -1,7 +1,9 @@
 package probprog.impl
 
 import cats.Traverse
-import probprog.{Language, Domain, Distribution}
+import probprog.Domain
+import probprog.Language
+
 import scala.collection.parallel.CollectionConverters._
 
 class Parallelize[L <: Language](threads: Int, val language: L) extends Language {

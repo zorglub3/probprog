@@ -1,7 +1,6 @@
 package probprog
 
-import cats.data.IndexedStateT
-import cats.{FlatMap, Functor, Foldable, Applicative, Traverse}
+
 
 trait ExprLanguage {
   type F[T]

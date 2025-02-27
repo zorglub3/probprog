@@ -1,11 +1,13 @@
 package probprog.impl
 
-import cats.data.StateT
-import cats.{Eval, FlatMap, Functor, Traverse}
+import cats.Eval
 import cats.Traverse
-import cats.syntax.all._
+import cats.data.StateT
+import probprog.Distribution
+import probprog.Domain
+import probprog.Language
+
 import scala.util.Random
-import probprog.{Language, Distribution, Domain}
 
 class LikelihoodWeight extends Language { 
   type EvalState = LWState

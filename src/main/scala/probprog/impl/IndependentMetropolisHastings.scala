@@ -1,9 +1,12 @@
 package probprog.impl
 
+import cats.Traverse
 import cats.data.StateT
-import cats.{FlatMap, Functor, Traverse}
+import probprog.Distribution
+import probprog.Domain
+import probprog.Language
+
 import scala.util.Random
-import probprog.{Language, Distribution, Domain}
 
 class IndependentMetropolisHastings extends Language {
   type EvalState = MHState
