@@ -47,6 +47,8 @@ class DiceRoll(val lang: Language) {
       defendSuccess <- defendGoblin(dex)
     } yield (if(attackSuccess) 1 else 0, if(defendSuccess) 0 else 1)
 
+  def check3d6(target: Int): F[Boolean] =
+    d6(3).map(_ > target)
 }
 
 object DiceRoll {
